@@ -3,27 +3,17 @@ package org.ibs.appline;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
-
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RgsTest extends BaseTests {
 
 
     @Test
     void rgsTest() {
-        WebDriver driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(20));
-        driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(15));
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(2));
-        driver.get("https://www.rgs.ru/");
+
 
         WebElement menuCompany = driver.findElement(By.xpath("//nav//li//a[text()='Компаниям']"));
         menuCompany.click();
@@ -34,7 +24,7 @@ public class RgsTest extends BaseTests {
         WebElement menuDms = driver.findElement(By.xpath("//li/a[text()='Добровольное медицинское страхование']"));
         menuDms.click();
         WebElement titleDms = driver.findElement(By.xpath("//main//h1"));
-        Assertions.assertEquals("Добровольное медицинское страхование", titleDms.getText(),"Заголовок страницы ДМС не соответствует ожидаемому");
+        assertEquals("Добровольное медицинское страхование", titleDms.getText(), "Заголовок страницы ДМС не соответствует ожидаемому");
         WebElement sendApplication = driver.findElement(By.xpath("//a/span[text()='Отправить заявку']"));
         sendApplication.click();
         sleep(1000);
@@ -47,46 +37,43 @@ public class RgsTest extends BaseTests {
         WebElement city = driver.findElement(By.xpath("//input[@class='vue-dadata__input']"));
         city.sendKeys("Ижевск");
         sleep(1000);
-        WebElement dropDownAll = driver.findElement(By.xpath("//div[@class='vue-dadata__suggestions']"));
-        Actions action= new Actions(driver);
-        action.moveToElement(dropDownAll).build().perform();
-        sleep(1000);
         WebElement cityDropdown = driver.findElement(By.xpath("//span[@class='vue-dadata__suggestions-item']"));
+        Actions action = new Actions(driver);
+        action.scrollByAmount(0, 100).build().perform();
+        sleep(1000);
         cityDropdown.click();
         sleep(1000);
         WebElement checkBox = driver.findElement(By.xpath("//label[@class='checkbox']"));
-        action.moveToElement(checkBox,-20,0).click().build().perform();
+        action.scrollByAmount(0, 100).build().perform();
+        action.moveToElement(checkBox, -20, 0).click().build().perform();
         sleep(3000);
-
-        Assertions.assertEquals("Иванов Иван Иванович", userName.getDomProperty("value"), "ФИО введено неверно");
-        Assertions.assertEquals("+7 (950) 950-2956", userTel.getDomProperty("value"),"Номер телефона введен неверно");
-        Assertions.assertEquals("qweqweqwe", userEmail.getDomProperty("value"),"Почта введена неверно");
-        Assertions.assertEquals("г Ижевск", city.getDomProperty("value"),"Город введен неверно" );
         WebElement checkboxChecked = driver.findElement(By.xpath("//input[@class='input']"));
-        Assertions.assertTrue(checkboxChecked.isSelected(),"Чекбокс согласий не отмечен");
-
+        assertAll(
+                () ->  assertEquals("Иванов Иван Иванjович", userName.getDomProperty("value"), "ФИО введено неверно"),
+                () ->  assertEquals("+7 (950) 950-29576", userTel.getDomProperty("value"), "Номер телефона введен неверно"),
+                () ->  assertEquals("qweqweqwe", userEmail.getDomProperty("value"), "Почта введена неверно"),
+                () ->  assertEquals("г Ижевск", city.getDomProperty("value"), "Город введен неверно"),
+                () ->  assertTrue(checkboxChecked.isSelected(), "Чекбокс согласий не отмечен")
+        );
 
 
         WebElement button = driver.findElement(By.xpath("//button[@type='submit']"));
         Assertions.assertFalse(button.isEnabled(), "Кнопка доступна для нажатия");
 
         WebElement textError = driver.findElement(By.xpath("//span[@class='input__error text--small']"));
-        Assertions.assertEquals("Введите корректный адрес электронной почты",textError.getText(),"Сообщение об ошибке ввода почты неверное");
+        assertEquals("Введите корректный адрес электронной почты", textError.getText(), "Сообщение об ошибке ввода почты неверное");
 
 
-        driver.quit();
     }
 
 
-    public void sleep (int mls) {
+    public void sleep(int mls) {
         try {
             Thread.sleep(mls);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
-
 
 
 }
